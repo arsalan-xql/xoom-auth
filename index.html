@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Xoom Auth</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #0057E7;
+      --primary-hover: #0046ba;
+      --bg-gradient-start: #0057E7;
+      --bg-gradient-end: #0042b0;
+      --text-main: #0A0A0A;
+      --text-secondary: #667085;
+      --border-color: #D0D5DD;
+      --error-color: #D92D20;
+      --success-color: #039855;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      margin: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Header */
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin: 0 0 12px 0;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 32px;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Stepper */
+    .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 1;
+      position: relative;
+    }
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      background: #F2F4F7;
+      color: #667085;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-circle {
+      background: var(--primary-blue);
+      color: #fff;
+    }
+
+    .step.completed .step-circle {
+      background: var(--success-color);
+      color: #fff;
+    }
+
+    .step-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .step.active .step-label {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .stepper-line {
+      height: 1px;
+      background: #E4E7EC;
+      flex: 1;
+      margin: 0 10px;
+      position: relative;
+      top: -14px;
+      /* Align with circle center */
+      max-width: 100px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-blue);
+      color: #fff;
+      border-color: var(--primary-blue);
+    }
+
+    .tab-btn.inactive {
+      background: #fff;
+      color: var(--primary-blue);
+      border: 1px solid var(--primary-blue);
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .label span {
+      color: var(--error-color);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-blue);
+      width: 20px;
+      height: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px 12px 44px;
+      /* Left padding for icon */
+      font-size: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+    }
+
+    input:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(0, 87, 231, 0.1);
+    }
+
+    input::placeholder {
+      color: #98A2B3;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-blue);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-transform: capitalize;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-primary:disabled {
+      background: #B2CCFF;
+      cursor: not-allowed;
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: #667085;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #E4E7EC;
+    }
+
+    .divider span {
+      padding: 0 12px;
+      text-transform: uppercase;
+    }
+
+    /* Google Button */
+    .btn-google {
+      width: 100%;
+      padding: 12px;
+      background: #1A73E8;
+      /* Or keep consistent blue, image shows similar blue */
+      background: var(--primary-blue);
+      /* Screenshot shows same blue */
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-transform: uppercase;
+    }
+
+    .btn-google:hover {
+      opacity: 0.9;
+    }
+
+    .google-icon-bg {
+      background: #fff;
+      border-radius: 4px;
+      /* small rounded bg for 'G' logo if needed, or just SVG */
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    /* Footer Links */
+    .footer-links {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .link {
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .register-text {
+      color: var(--text-main);
+      font-size: 14px;
+    }
+
+    /* Utilities */
+    .hidden {
+      display: none !important;
+    }
+
+    .msg {
+      font-size: 13px;
+      margin-top: 8px;
+      text-align: center;
+      min-height: 20px;
+    }
+
+    .msg.error {
+      color: var(--error-color);
+    }
+
+    .msg.success {
+      color: var(--success-color);
+    }
+
+    /* SVG Icons */
+    .icon {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Specific fix for filled icons vs outlined icons */
+    .input-icon path,
+    .input-icon rect,
+    .input-icon polyline {
+      fill: none;
+      stroke: currentColor;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <!-- LOGIN VIEW -->
+    <div id="view-login">
+      <h1>Welcome Back</h1>
+      <div class="subtitle">
+        Sign in to your premium vendor account and manage your vehicle fleet.
+      </div>
+
+      <!-- Stepper -->
+      <div class="stepper">
+        <div class="step active" id="login-step-1-indicator">
+          <div class="step-circle">1</div>
+          <div class="step-label">Enter Details</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="step" id="login-step-2-indicator">
+          <div class="step-circle">2</div>
+          <div class="step-label">Verify Identity</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" id="login-tabs">
+        <button class="tab-btn active" data-tab="email">Email</button>
+        <button class="tab-btn inactive" data-tab="phone">Phone</button>
+      </div>
+
+      <!-- EMAIL FORM -->
+      <form id="login-email-form">
+        <!-- Step 1: Email Input -->
+        <div id="login-email-step-1">
+          <div class="form-group">
+            <label class="label">Email Address <span>*</span></label>
+            <div class="input-wrapper">
+              <!-- Mail Icon -->
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <input type="email" id="input-email" placeholder="Enter your email" required />
+            </div>
+          </div>
+          <button type="button" class="btn-primary" id="btn-email-continue">Continue</button>
+        </div>
+
+        <!-- Step 2: Password Input -->
+        <div id="login-email-step-2" class="hidden">
+          <div class="form-group">
+            <label class="label">Password <span>*</span></label>
+            <div class="input-wrapper">
+              <!-- Lock Icon -->
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="input-password" placeholder="Enter your password" />
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-email-login">Login</button>
+          <div style="margin-top:12px;">
+            <a href="#" class="link" id="back-to-email-step-1">← Back to Email</a>
+          </div>
+        </div>
+      </form>
+
+      <!-- PHONE FORM -->
+      <form id="login-phone-form" class="hidden">
+        <!-- Step 1: Phone Input -->
+        <div id="login-phone-step-1">
+          <div class="form-group">
+            <label class="label">Phone Number <span>*</span></label>
+            <div class="input-wrapper">
+              <!-- Phone Icon -->
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                </path>
+              </svg>
+              <input type="tel" id="input-phone" placeholder="+919876543210" />
+            </div>
+          </div>
+          <button type="button" class="btn-primary" id="btn-phone-continue">Continue</button>
+        </div>
+
+        <!-- Step 2: OTP Input -->
+        <div id="login-phone-step-2" class="hidden">
+          <div class="form-group">
+            <label class="label">Enter OTP <span>*</span></label>
+            <div class="input-wrapper">
+              <!-- Shield/Key Icon -->
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <input type="text" id="input-otp" placeholder="123456" maxlength="6" />
+            </div>
+          </div>
+          <button type="button" class="btn-primary" id="btn-phone-verify">Verify & Login</button>
+          <div id="recaptcha-container"></div>
+          <div style="margin-top:12px;">
+            <a href="#" class="link" id="back-to-phone-step-1">← Back to Phone</a>
+          </div>
+        </div>
+      </form>
+
+      <div class="msg" id="login-msg"></div>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <!-- Google Button -->
+      <button class="btn-google" id="btn-google">
+        <div class="google-icon-bg">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
+        </div>
+        Continue with Google
+      </button>
+
+      <!-- Footer -->
+      <div class="footer-links">
+        <a href="#" class="link" id="link-forgot-password">Forgot Password?</a>
+        <div class="register-text">
+          Don't have an account? <a href="#" class="link" id="link-register">Register here</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER VIEW (Hidden by default) -->
+    <div id="view-register" class="hidden">
+      <h1>Create Account</h1>
+      <div class="subtitle">Join our vendor network</div>
+
+      <!-- Register Stepper -->
+      <div class="stepper">
+        <div class="step active" id="reg-step-1-ind">
+          <div class="step-circle">1</div>
+          <div class="step-label">Basic</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="step" id="reg-step-2-ind">
+          <div class="step-circle">2</div>
+          <div class="step-label">Phone</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="step" id="reg-step-3-ind">
+          <div class="step-circle">3</div>
+          <div class="step-label">Secure</div>
+        </div>
+      </div>
+
+      <form id="register-form">
+        <!-- Step 1 -->
+        <div id="reg-step-1">
+          <div class="form-group">
+            <label class="label">Full Name <span>*</span></label>
+            <input type="text" id="reg-name" placeholder="John Doe" required />
+          </div>
+          <div class="form-group">
+            <label class="label">Email <span>*</span></label>
+            <input type="email" id="reg-email" placeholder="you@company.com" required />
+          </div>
+          <div class="form-group">
+            <label class="label">Phone <span>*</span></label>
+            <input type="tel" id="reg-phone" placeholder="+919876543210" required />
+          </div>
+          <button type="button" class="btn-primary" id="btn-reg-next">Continue</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="reg-step-2" class="hidden">
+          <div class="form-group">
+            <label class="label">Verify Phone</label>
+            <p style="font-size:13px; color:#666;">We'll send an OTP to verify your number.</p>
+          </div>
+          <button type="button" class="btn-primary" id="btn-reg-send-otp">Send OTP</button>
+
+          <div id="reg-otp-input-group" class="hidden" style="margin-top:16px;">
+            <div class="form-group">
+              <label class="label">Enter OTP</label>
+              <input type="text" id="reg-otp" placeholder="123456" />
+            </div>
+            <button type="button" class="btn-primary" id="btn-reg-verify-otp">Verify OTP</button>
+          </div>
+          <div id="register-recaptcha-container"></div>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="reg-step-3" class="hidden">
+          <div class="form-group">
+            <label class="label">Create Password <span>*</span></label>
+            <input type="password" id="reg-password" placeholder="Min 6 chars" required />
+          </div>
+          <div class="form-group">
+            <label class="label">Address (Optional)</label>
+            <input type="text" id="reg-address" placeholder="Business Address" />
+          </div>
+          <button type="submit" class="btn-primary" id="btn-reg-complete">Create Account</button>
+        </div>
+      </form>
+
+      <div class="msg" id="register-msg"></div>
+      <div style="margin-top:24px;">
+        <a href="#" class="link" id="link-back-to-login">← Back to Login</a>
+      </div>
+    </div>
+
+    <!-- RECOVER VIEW (Hidden by default) -->
+    <div id="view-recover" class="hidden">
+      <h1>Recover Account</h1>
+      <div class="subtitle">Enter your email or phone to reset access</div>
+
+      <div class="form-group">
+        <label class="label">Email or Phone</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <input type="text" id="recover-input" placeholder="Email or +Phone" />
+        </div>
+      </div>
+
+      <button type="button" class="btn-primary" id="btn-recover-start">Send Link / OTP</button>
+
+      <div id="recover-otp-group" class="hidden" style="margin-top:16px;">
+        <div class="form-group">
+          <label class="label">Enter OTP (Phone Recovery)</label>
+          <input type="text" id="recover-otp" placeholder="123456" />
+        </div>
+        <button type="button" class="btn-primary" id="btn-recover-verify">Verify & Login</button>
+      </div>
+
+      <div id="recovery-recaptcha-container"></div>
+      <div class="msg" id="recover-msg"></div>
+
+      <div style="margin-top:24px;">
+        <a href="#" class="link" id="link-back-to-login-2">← Back to Login</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    window.recaptchaOptions = { useRecaptchaEnterprise: false };
+    if (window.grecaptcha && window.grecaptcha.enterprise) {
+      window.grecaptcha.enterprise.ready = undefined;
+    }
+  </script>
+
+  <script type="module">
+    function sendLoginToReactNative(token, user) {
+      const payload = {
+        type: "LOGIN_SUCCESS",
+        token,
+        user
+      };
+
+      // If running inside React Native WebView
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+      } else {
+        console.log("Not inside React Native WebView");
+      }
+    }
+
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js';
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      RecaptchaVerifier,
+      signInWithPhoneNumber,
+      sendPasswordResetEmail,
+      signOut
+    } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBf38v767ZAifNC2k86lwPSCb2bR5OnQ7w",
+      authDomain: "xoom-99a79.firebaseapp.com",
+      projectId: "xoom-99a79",
+      storageBucket: "xoom-99a79.firebasestorage.app",
+      messagingSenderId: "1063714786459",
+      appId: "1:1063714786459:web:14985d1e6ea741874c4a3e",
+      measurementId: "G-2H0P85NFGS"
+    };
+
+    const API_BASE_URL = 'https://xoom-rental-be.vercel.app/api/v1';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let recaptchaVerifier = null;
+    let phoneConfirmation = null;
+    let recoveryConfirmation = null;
+    let registerConfirmation = null;
+    let verifiedRegisterPhone = null;
+
+    // --- VIEW NAVIGATION ---
+    const viewLogin = document.getElementById('view-login');
+    const viewRegister = document.getElementById('view-register');
+    const viewRecover = document.getElementById('view-recover');
+
+    function showView(viewId) {
+      viewLogin.classList.add('hidden');
+      viewRegister.classList.add('hidden');
+      viewRecover.classList.add('hidden');
+      document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    document.getElementById('link-register').addEventListener('click', (e) => {
+      e.preventDefault(); showView('view-register');
+    });
+    document.getElementById('link-forgot-password').addEventListener('click', (e) => {
+      e.preventDefault(); showView('view-recover');
+    });
+    document.getElementById('link-back-to-login').addEventListener('click', (e) => {
+      e.preventDefault(); showView('view-login');
+    });
+    document.getElementById('link-back-to-login-2').addEventListener('click', (e) => {
+      e.preventDefault(); showView('view-login');
+    });
+
+    // --- HELPERS ---
+    function setMessage(id, type, text) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.className = 'msg ' + (type || '');
+        el.textContent = text || '';
+      }
+    }
+
+    function storeAuthData(token, user) {
+      try {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      } catch (e) { console.error(e); }
+    }
+
+    async function backendPost(path, payload) {
+      const res = await fetch(API_BASE_URL + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload || {})
+      });
+      let body = {};
+      try { body = await res.json(); } catch (_) { }
+      if (!res.ok || body.success === false) {
+        throw new Error(body.message || 'Backend error');
+      }
+      return body;
+    }
+
+    function setupRecaptcha(containerId) {
+      if (recaptchaVerifier) {
+        try { recaptchaVerifier.clear(); } catch (_) { }
+        recaptchaVerifier = null;
+      }
+      recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+        size: 'invisible',
+        callback: () => { },
+        'expired-callback': () => { }
+      });
+      return recaptchaVerifier;
+    }
+
+    // --- LOGIN LOGIC ---
+    // Tabs
+    const tabEmail = document.querySelector('[data-tab="email"]');
+    const tabPhone = document.querySelector('[data-tab="phone"]');
+    const formEmail = document.getElementById('login-email-form');
+    const formPhone = document.getElementById('login-phone-form');
+
+    function switchTab(mode) {
+      if (mode === 'email') {
+        tabEmail.className = 'tab-btn active';
+        tabPhone.className = 'tab-btn inactive';
+        formEmail.classList.remove('hidden');
+        formPhone.classList.add('hidden');
+      } else {
+        tabEmail.className = 'tab-btn inactive';
+        tabPhone.className = 'tab-btn active';
+        formEmail.classList.add('hidden');
+        formPhone.classList.remove('hidden');
+      }
+    }
+
+    tabEmail.addEventListener('click', () => switchTab('email'));
+    tabPhone.addEventListener('click', () => switchTab('phone'));
+
+    // Stepper Update
+    function setLoginStep(step) {
+      const step1 = document.getElementById('login-step-1-indicator');
+      const step2 = document.getElementById('login-step-2-indicator');
+      if (step === 1) {
+        step1.className = 'step active';
+        step2.className = 'step';
+      } else {
+        step1.className = 'step completed'; // Mark 1 as completed
+        step2.className = 'step active';
+      }
+    }
+
+    // Email Flow
+    const btnEmailContinue = document.getElementById('btn-email-continue');
+    const btnEmailLogin = document.getElementById('btn-email-login');
+    const divEmailStep1 = document.getElementById('login-email-step-1');
+    const divEmailStep2 = document.getElementById('login-email-step-2');
+    const backToEmail1 = document.getElementById('back-to-email-step-1');
+
+    btnEmailContinue.addEventListener('click', () => {
+      const email = document.getElementById('input-email').value.trim();
+      if (!email || !email.includes('@')) {
+        setMessage('login-msg', 'error', 'Please enter a valid email');
+        return;
+      }
+      setMessage('login-msg', '', '');
+      divEmailStep1.classList.add('hidden');
+      divEmailStep2.classList.remove('hidden');
+      setLoginStep(2);
+    });
+
+    backToEmail1.addEventListener('click', (e) => {
+      e.preventDefault();
+      divEmailStep2.classList.add('hidden');
+      divEmailStep1.classList.remove('hidden');
+      setLoginStep(1);
+    });
+
+    btnEmailLogin.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('input-email').value.trim();
+      const password = document.getElementById('input-password').value;
+
+      btnEmailLogin.disabled = true;
+      setMessage('login-msg', '', '');
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const backendRes = await backendPost('/users/verify-and-login', {
+          uid: cred.user.uid,
+          email: cred.user.email
+        });
+         storeAuthData(backendRes.data.token, backendRes.data.user);
+
+        // 🔥 Send data to React Native
+        sendLoginToReactNative(
+          backendRes.data.token,
+          backendRes.data.user
+        );
+
+        setMessage('login-msg', 'success', 'Success! Logging innnnnn...');
+      } catch (err) {
+        console.error(err);
+        setMessage('login-msg', 'error', err.message || 'Login failed');
+      } finally {
+        btnEmailLogin.disabled = false;
+      }
+    });
+
+    // Phone Flow
+    const btnPhoneContinue = document.getElementById('btn-phone-continue');
+    const btnPhoneVerify = document.getElementById('btn-phone-verify');
+    const divPhoneStep1 = document.getElementById('login-phone-step-1');
+    const divPhoneStep2 = document.getElementById('login-phone-step-2');
+    const backToPhone1 = document.getElementById('back-to-phone-step-1');
+
+    btnPhoneContinue.addEventListener('click', async () => {
+      const phone = document.getElementById('input-phone').value.trim();
+      if (!phone.startsWith('+')) {
+        setMessage('login-msg', 'error', 'Phone must start with country code (e.g. +91)');
+        return;
+      }
+      setMessage('login-msg', '', '');
+      btnPhoneContinue.disabled = true;
+
+      try {
+        const verifier = setupRecaptcha('recaptcha-container');
+        phoneConfirmation = await signInWithPhoneNumber(auth, phone, verifier);
+        divPhoneStep1.classList.add('hidden');
+        divPhoneStep2.classList.remove('hidden');
+        setLoginStep(2);
+        setMessage('login-msg', 'success', 'OTP sent to ' + phone);
+      } catch (err) {
+        console.error(err);
+        setMessage('login-msg', 'error', err.message || 'Failed to send OTP');
+      } finally {
+        btnPhoneContinue.disabled = false;
+      }
+    });
+
+    backToPhone1.addEventListener('click', (e) => {
+      e.preventDefault();
+      divPhoneStep2.classList.add('hidden');
+      divPhoneStep1.classList.remove('hidden');
+      setLoginStep(1);
+    });
+
+    btnPhoneVerify.addEventListener('click', async () => {
+      const otp = document.getElementById('input-otp').value.trim();
+      if (!otp) return;
+      btnPhoneVerify.disabled = true;
+      setMessage('login-msg', '', '');
+
+      try {
+        const cred = await phoneConfirmation.confirm(otp);
+        let backendRes;
+        try {
+          backendRes = await backendPost('/users/verify-and-login', {
+            uid: cred.user.uid,
+            phoneNumber: cred.user.phoneNumber
+          });
+        } catch (loginErr) {
+          // Fallback register
+          backendRes = await backendPost('/users/verify-and-register', {
+            uid: cred.user.uid,
+            phoneNumber: cred.user.phoneNumber,
+            name: 'Phone User',
+            role: 'vendor'
+          });
+        }
+        storeAuthData(backendRes.data.token, backendRes.data.user);
+        setMessage('login-msg', 'success', 'Success! Logging in...');
+      } catch (err) {
+        console.error(err);
+        setMessage('login-msg', 'error', err.message || 'Verification failed');
+      } finally {
+        btnPhoneVerify.disabled = false;
+      }
+    });
+
+    // Google
+    document.getElementById('btn-google').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-google');
+      btn.disabled = true;
+      setMessage('login-msg', '', '');
+      try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const idToken = await result.user.getIdToken();
+        const backendRes = await backendPost('/users/auto-google-login', {
+          idToken,
+          email: result.user.email,
+          uid: result.user.uid,
+          displayName: result.user.displayName
+        });
+        storeAuthData(backendRes.data.token, backendRes.data.user);
+
+        // 🔥 Send data to React Native
+        sendLoginToReactNative(
+          backendRes.data.token,
+          backendRes.data.user
+        );
+
+        setMessage('login-msg', 'success', 'Success! Logging innnnnn...');
+
+      } catch (err) {
+        console.error(err);
+        setMessage('login-msg', 'error', err.message || 'Google login failed');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // --- REGISTER LOGIC ---
+    function setRegStep(step) {
+      document.getElementById('reg-step-1').classList.add('hidden');
+      document.getElementById('reg-step-2').classList.add('hidden');
+      document.getElementById('reg-step-3').classList.add('hidden');
+      document.getElementById('reg-step-' + step).classList.remove('hidden');
+
+      [1, 2, 3].forEach(i => {
+        const el = document.getElementById('reg-step-' + i + '-ind');
+        el.className = 'step' + (i === step ? ' active' : (i < step ? ' completed' : ''));
+      });
+    }
+
+    document.getElementById('btn-reg-next').addEventListener('click', () => {
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const phone = document.getElementById('reg-phone').value;
+      if (!name || !email || !phone) {
+        setMessage('register-msg', 'error', 'Fill all fields'); return;
+      }
+      if (!phone.startsWith('+')) {
+        setMessage('register-msg', 'error', 'Phone needs country code'); return;
+      }
+      setRegStep(2);
+    });
+
+    document.getElementById('btn-reg-send-otp').addEventListener('click', async () => {
+      const phone = document.getElementById('reg-phone').value;
+      const btn = document.getElementById('btn-reg-send-otp');
+      btn.disabled = true;
+      try {
+        const verifier = setupRecaptcha('register-recaptcha-container');
+        registerConfirmation = await signInWithPhoneNumber(auth, phone, verifier);
+        document.getElementById('reg-otp-input-group').classList.remove('hidden');
+        setMessage('register-msg', 'success', 'OTP sent');
+      } catch (e) {
+        setMessage('register-msg', 'error', e.message);
+      } finally { btn.disabled = false; }
+    });
+
+    document.getElementById('btn-reg-verify-otp').addEventListener('click', async () => {
+      const otp = document.getElementById('reg-otp').value;
+      try {
+        const res = await registerConfirmation.confirm(otp);
+        verifiedRegisterPhone = res.user.phoneNumber;
+        await signOut(auth); // Sign out to let user finish reg
+        setRegStep(3);
+        setMessage('register-msg', '', '');
+      } catch (e) {
+        setMessage('register-msg', 'error', e.message);
+      }
+    });
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pass = document.getElementById('reg-password').value;
+      if (!pass || pass.length < 6) {
+        setMessage('register-msg', 'error', 'Password too short'); return;
+      }
+      const btn = document.getElementById('btn-reg-complete');
+      btn.disabled = true;
+      try {
+        const backendRes = await backendPost('/users/register-unified', {
+          email: document.getElementById('reg-email').value,
+          password: pass,
+          phoneNumber: verifiedRegisterPhone,
+          fullName: document.getElementById('reg-name').value,
+          address: document.getElementById('reg-address').value || null,
+          role: 'vendor'
+        });
+        storeAuthData(backendRes.data.token, backendRes.data.user);
+        setMessage('register-msg', 'success', 'Account Created!');
+      } catch (err) {
+        setMessage('register-msg', 'error', err.message);
+      } finally { btn.disabled = false; }
+    });
+
+    // --- RECOVER LOGIC ---
+    document.getElementById('btn-recover-start').addEventListener('click', async () => {
+      const input = document.getElementById('recover-input').value.trim();
+      if (!input) return;
+      const btn = document.getElementById('btn-recover-start');
+      btn.disabled = true;
+      setMessage('recover-msg', '', '');
+
+      if (input.includes('@')) {
+        try {
+          await sendPasswordResetEmail(auth, input);
+          setMessage('recover-msg', 'success', 'Reset email sent!');
+        } catch (e) { setMessage('recover-msg', 'error', e.message); }
+        finally { btn.disabled = false; }
+      } else {
+        if (!input.startsWith('+')) {
+          setMessage('recover-msg', 'error', 'Phone needs country code');
+          btn.disabled = false; return;
+        }
+        try {
+          const verifier = setupRecaptcha('recovery-recaptcha-container');
+          recoveryConfirmation = await signInWithPhoneNumber(auth, input, verifier);
+          document.getElementById('recover-otp-group').classList.remove('hidden');
+          setMessage('recover-msg', 'success', 'OTP Sent');
+        } catch (e) { setMessage('recover-msg', 'error', e.message); }
+        finally { btn.disabled = false; }
+      }
+    });
+
+    document.getElementById('btn-recover-verify').addEventListener('click', async () => {
+      const otp = document.getElementById('recover-otp').value;
+      try {
+        const res = await recoveryConfirmation.confirm(otp);
+        const backendRes = await backendPost('/users/verify-and-login', {
+          uid: res.user.uid, phoneNumber: res.user.phoneNumber
+        });
+        storeAuthData(backendRes.data.token, backendRes.data.user);
+        setMessage('recover-msg', 'success', 'Recovered & Logged In');
+      } catch (e) { setMessage('recover-msg', 'error', e.message); }
+    });
+
+  </script>
+</body>
+
+</html>
