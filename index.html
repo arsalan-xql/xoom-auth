@@ -827,7 +827,7 @@
           uid: cred.user.uid,
           email: cred.user.email
         });
-         storeAuthData(backendRes.data.token, backendRes.data.user);
+        storeAuthData(backendRes.data.token, backendRes.data.user);
 
         // 🔥 Send data to React Native
         sendLoginToReactNative(
@@ -906,6 +906,10 @@
           });
         }
         storeAuthData(backendRes.data.token, backendRes.data.user);
+        sendLoginToReactNative(
+          backendRes.data.token,
+          backendRes.data.user
+        );
         setMessage('login-msg', 'success', 'Success! Logging in...');
       } catch (err) {
         console.error(err);
