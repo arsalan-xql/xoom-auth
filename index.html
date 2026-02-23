@@ -693,18 +693,18 @@
       document.getElementById(viewId).classList.remove('hidden');
     }
 
-    document.getElementById('link-register').addEventListener('click', (e) => {
-      e.preventDefault(); showView('view-register');
-    });
-    document.getElementById('link-forgot-password').addEventListener('click', (e) => {
-      e.preventDefault(); showView('view-recover');
-    });
-    document.getElementById('link-back-to-login').addEventListener('click', (e) => {
-      e.preventDefault(); showView('view-login');
-    });
-    document.getElementById('link-back-to-login-2').addEventListener('click', (e) => {
-      e.preventDefault(); showView('view-login');
-    });
+    // document.getElementById('link-register').addEventListener('click', (e) => {
+    //   e.preventDefault(); showView('view-register');
+    // });
+    // document.getElementById('link-forgot-password').addEventListener('click', (e) => {
+    //   e.preventDefault(); showView('view-recover');
+    // });
+    // document.getElementById('link-back-to-login').addEventListener('click', (e) => {
+    //   e.preventDefault(); showView('view-login');
+    // });
+    // document.getElementById('link-back-to-login-2').addEventListener('click', (e) => {
+    //   e.preventDefault(); showView('view-login');
+    // });
 
     // --- HELPERS ---
     function setMessage(id, type, text) {
@@ -751,27 +751,27 @@
 
     // --- LOGIN LOGIC ---
     // Tabs
-    const tabEmail = document.querySelector('[data-tab="email"]');
-    const tabPhone = document.querySelector('[data-tab="phone"]');
-    const formEmail = document.getElementById('login-email-form');
-    const formPhone = document.getElementById('login-phone-form');
+    // const tabEmail = document.querySelector('[data-tab="email"]');
+    // const tabPhone = document.querySelector('[data-tab="phone"]');
+    // const formEmail = document.getElementById('login-email-form');
+    // const formPhone = document.getElementById('login-phone-form');
 
-    function switchTab(mode) {
-      if (mode === 'email') {
-        tabEmail.className = 'tab-btn active';
-        tabPhone.className = 'tab-btn inactive';
-        formEmail.classList.remove('hidden');
-        formPhone.classList.add('hidden');
-      } else {
-        tabEmail.className = 'tab-btn inactive';
-        tabPhone.className = 'tab-btn active';
-        formEmail.classList.add('hidden');
-        formPhone.classList.remove('hidden');
-      }
-    }
+    // function switchTab(mode) {
+    //   if (mode === 'email') {
+    //     tabEmail.className = 'tab-btn active';
+    //     tabPhone.className = 'tab-btn inactive';
+    //     formEmail.classList.remove('hidden');
+    //     formPhone.classList.add('hidden');
+    //   } else {
+    //     tabEmail.className = 'tab-btn inactive';
+    //     tabPhone.className = 'tab-btn active';
+    //     formEmail.classList.add('hidden');
+    //     formPhone.classList.remove('hidden');
+    //   }
+    // }
 
-    tabEmail.addEventListener('click', () => switchTab('email'));
-    tabPhone.addEventListener('click', () => switchTab('phone'));
+    // tabEmail.addEventListener('click', () => switchTab('email'));
+    // tabPhone.addEventListener('click', () => switchTab('phone'));
 
     // Stepper Update
     function setLoginStep(step) {
@@ -787,61 +787,60 @@
     }
 
     // Email Flow
-    const btnEmailContinue = document.getElementById('btn-email-continue');
-    const btnEmailLogin = document.getElementById('btn-email-login');
-    const divEmailStep1 = document.getElementById('login-email-step-1');
-    const divEmailStep2 = document.getElementById('login-email-step-2');
-    const backToEmail1 = document.getElementById('back-to-email-step-1');
+    // const btnEmailContinue = document.getElementById('btn-email-continue');
+    // const btnEmailLogin = document.getElementById('btn-email-login');
+    // const divEmailStep1 = document.getElementById('login-email-step-1');
+    // const divEmailStep2 = document.getElementById('login-email-step-2');
+    // const backToEmail1 = document.getElementById('back-to-email-step-1');
 
-    btnEmailContinue.addEventListener('click', () => {
-      const email = document.getElementById('input-email').value.trim();
-      if (!email || !email.includes('@')) {
-        setMessage('login-msg', 'error', 'Please enter a valid email');
-        return;
-      }
-      setMessage('login-msg', '', '');
-      divEmailStep1.classList.add('hidden');
-      divEmailStep2.classList.remove('hidden');
-      setLoginStep(2);
-    });
+    // btnEmailContinue.addEventListener('click', () => {
+    //   const email = document.getElementById('input-email').value.trim();
+    //   if (!email || !email.includes('@')) {
+    //     setMessage('login-msg', 'error', 'Please enter a valid email');
+    //     return;
+    //   }
+    //   setMessage('login-msg', '', '');
+    //   divEmailStep1.classList.add('hidden');
+    //   divEmailStep2.classList.remove('hidden');
+    //   setLoginStep(2);
+    // });
 
-    backToEmail1.addEventListener('click', (e) => {
-      e.preventDefault();
-      divEmailStep2.classList.add('hidden');
-      divEmailStep1.classList.remove('hidden');
-      setLoginStep(1);
-    });
+    // backToEmail1.addEventListener('click', (e) => {
+    //   e.preventDefault();
+    //   divEmailStep2.classList.add('hidden');
+    //   divEmailStep1.classList.remove('hidden');
+    //   setLoginStep(1);
+    // });
 
-    btnEmailLogin.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('input-email').value.trim();
-      const password = document.getElementById('input-password').value;
+    // btnEmailLogin.addEventListener('click', async (e) => {
+    //   e.preventDefault();
+    //   const email = document.getElementById('input-email').value.trim();
+    //   const password = document.getElementById('input-password').value;
 
-      btnEmailLogin.disabled = true;
-      setMessage('login-msg', '', '');
+    //   btnEmailLogin.disabled = true;
+    //   setMessage('login-msg', '', '');
 
-      try {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        const backendRes = await backendPost('/users/verify-and-login', {
-          uid: cred.user.uid,
-          email: cred.user.email
-        });
-        storeAuthData(backendRes.data.token, backendRes.data.user);
+    //   try {
+    //     const cred = await signInWithEmailAndPassword(auth, email, password);
+    //     const backendRes = await backendPost('/users/verify-and-login', {
+    //       uid: cred.user.uid,
+    //       email: cred.user.email
+    //     });
+    //     storeAuthData(backendRes.data.token, backendRes.data.user);
 
-        // 🔥 Send data to React Native
-        sendLoginToReactNative(
-          backendRes.data.token,
-          backendRes.data.user
-        );
+    //     sendLoginToReactNative(
+    //       backendRes.data.token,
+    //       backendRes.data.user
+    //     );
 
-        setMessage('login-msg', 'success', 'Success! Logging innnnnn...');
-      } catch (err) {
-        console.error(err);
-        setMessage('login-msg', 'error', err.message || 'Login failed');
-      } finally {
-        btnEmailLogin.disabled = false;
-      }
-    });
+    //     setMessage('login-msg', 'success', 'Success! Logging innnnnn...');
+    //   } catch (err) {
+    //     console.error(err);
+    //     setMessage('login-msg', 'error', err.message || 'Login failed');
+    //   } finally {
+    //     btnEmailLogin.disabled = false;
+    //   }
+    // });
 
     // Phone Flow
     const btnPhoneContinue = document.getElementById('btn-phone-continue');
@@ -918,38 +917,36 @@
       }
     });
 
-    // Google
-    document.getElementById('btn-google').addEventListener('click', async () => {
-      const btn = document.getElementById('btn-google');
-      btn.disabled = true;
-      setMessage('login-msg', '', '');
-      try {
-        const provider = new GoogleAuthProvider();
-        const result = await signInWithPopup(auth, provider);
-        const idToken = await result.user.getIdToken();
-        const backendRes = await backendPost('/users/auto-google-login', {
-          idToken,
-          email: result.user.email,
-          uid: result.user.uid,
-          displayName: result.user.displayName
-        });
-        storeAuthData(backendRes.data.token, backendRes.data.user);
+    // document.getElementById('btn-google').addEventListener('click', async () => {
+    //   const btn = document.getElementById('btn-google');
+    //   btn.disabled = true;
+    //   setMessage('login-msg', '', '');
+    //   try {
+    //     const provider = new GoogleAuthProvider();
+    //     const result = await signInWithPopup(auth, provider);
+    //     const idToken = await result.user.getIdToken();
+    //     const backendRes = await backendPost('/users/auto-google-login', {
+    //       idToken,
+    //       email: result.user.email,
+    //       uid: result.user.uid,
+    //       displayName: result.user.displayName
+    //     });
+    //     storeAuthData(backendRes.data.token, backendRes.data.user);
 
-        // 🔥 Send data to React Native
-        sendLoginToReactNative(
-          backendRes.data.token,
-          backendRes.data.user
-        );
+    //     sendLoginToReactNative(
+    //       backendRes.data.token,
+    //       backendRes.data.user
+    //     );
 
-        setMessage('login-msg', 'success', 'Success! Logging innnnnn...');
+    //     setMessage('login-msg', 'success', 'Success! Logging innnnnn...');
 
-      } catch (err) {
-        console.error(err);
-        setMessage('login-msg', 'error', err.message || 'Google login failed');
-      } finally {
-        btn.disabled = false;
-      }
-    });
+    //   } catch (err) {
+    //     console.error(err);
+    //     setMessage('login-msg', 'error', err.message || 'Google login failed');
+    //   } finally {
+    //     btn.disabled = false;
+    //   }
+    // });
 
     // --- REGISTER LOGIC ---
     function setRegStep(step) {
