@@ -529,6 +529,17 @@
             <button type="button" class="btn-primary" id="btn-phone-verify">
               Verify & Login
             </button>
+            <div style="margin-top: 10px">
+              <span id="resend-container">
+                <span
+                  id="resend-timer-text"
+                  class="link"
+                  style="color: #98a2b3"
+                >
+                  Resend OTP in 30s
+                </span>
+              </span>
+            </div>
             <div id="recaptcha-container"></div>
             <div style="margin-top: 12px">
               <a href="#" class="link" id="back-to-phone-step-1"
@@ -876,24 +887,24 @@
       //   return recaptchaVerifier;
       // }
       function setupRecaptcha(containerId) {
-  // If already created, just return it
-  if (recaptchaVerifier) {
-    return recaptchaVerifier;
-  }
+        // If already created, just return it
+        if (recaptchaVerifier) {
+          return recaptchaVerifier;
+        }
 
-  recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-    size: "invisible",
-    callback: () => {
-      console.log("reCAPTCHA solved");
-    },
-    "expired-callback": () => {
-      console.log("reCAPTCHA expired");
-      recaptchaVerifier.reset();
-    },
-  });
+        recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+          size: "invisible",
+          callback: () => {
+            console.log("reCAPTCHA solved");
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired");
+            recaptchaVerifier.reset();
+          },
+        });
 
-  return recaptchaVerifier;
-}
+        return recaptchaVerifier;
+      }
 
       // --- LOGIN LOGIC ---
       // Tabs
@@ -1012,9 +1023,9 @@
 
         try {
           const verifier = setupRecaptcha("recaptcha-container");
-           if (verifier.rendered) {
-      verifier.reset();
-    }
+          if (verifier.rendered) {
+            verifier.reset();
+          }
           phoneConfirmation = await signInWithPhoneNumber(
             auth,
             phone,
@@ -1024,6 +1035,7 @@
           divPhoneStep2.classList.remove("hidden");
           setLoginStep(2);
           setMessage("login-msg", "success", "OTP sent to " + phone);
+          startResendCountdown();
         } catch (err) {
           console.error(err);
           setMessage("login-msg", "error", err.message || "Failed to send OTP");
@@ -1034,6 +1046,30 @@
 
       backToPhone1.addEventListener("click", (e) => {
         e.preventDefault();
+
+        // Stop countdown
+        clearInterval(resendTimer);
+
+        // Clear OTP field
+        document.getElementById("input-otp").value = "";
+
+        // Clear success/error message
+        setMessage("login-msg", "", "");
+
+        // Reset resend UI back to default timer state
+        const resendContainer = document.getElementById("resend-container");
+        if (resendContainer) {
+          resendContainer.innerHTML = `
+      <span id="resend-timer-text" class="link" style="color:#98A2B3;">
+        Resend OTP in 30s
+      </span>
+    `;
+        }
+
+        // Reset Firebase confirmation object
+        phoneConfirmation = null;
+
+        // Switch steps
         divPhoneStep2.classList.add("hidden");
         divPhoneStep1.classList.remove("hidden");
         setLoginStep(1);
@@ -1285,6 +1321,97 @@
         utilsScript:
           "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
       });
+
+      let resendTimer = null;
+      let resendSeconds = 30;
+
+      function startResendCountdown() {
+        clearInterval(resendTimer);
+        resendSeconds = 30;
+
+        const resendTimerText = document.getElementById("resend-timer-text");
+        if (!resendTimerText) return;
+
+        resendTimerText.textContent = `Resend OTP in ${resendSeconds}s`;
+        resendTimerText.style.color = "#98A2B3";
+
+        resendTimer = setInterval(() => {
+          resendSeconds--;
+
+          if (resendSeconds > 0) {
+            const el = document.getElementById("resend-timer-text");
+            if (el) {
+              el.textContent = `Resend OTP in ${resendSeconds}s`;
+            }
+          } else {
+            clearInterval(resendTimer);
+            showResendButton();
+          }
+        }, 1000);
+      }
+
+      function showResendButton() {
+        const resendContainer = document.getElementById("resend-container");
+        if (!resendContainer) return;
+
+        resendContainer.innerHTML = `
+    <a href="#" class="link" id="resend-login-otp">
+      Resend OTP
+    </a>
+  `;
+
+        const btn = document.getElementById("resend-login-otp");
+        if (btn) {
+          btn.addEventListener("click", handleResendOtp);
+        }
+      }
+
+      async function handleResendOtp(e) {
+        e.preventDefault();
+
+        const phone = iti.getNumber();
+
+        if (!iti.isValidNumber()) {
+          setMessage("login-msg", "error", "Invalid phone number");
+          return;
+        }
+
+        setMessage("login-msg", "", "");
+
+        try {
+          const verifier = setupRecaptcha("recaptcha-container");
+
+          if (verifier.rendered) {
+            verifier.reset();
+          }
+
+          phoneConfirmation = await signInWithPhoneNumber(
+            auth,
+            phone,
+            verifier,
+          );
+
+          setMessage("login-msg", "success", "OTP resent successfully");
+
+          const resendContainer = document.getElementById("resend-container");
+          if (resendContainer) {
+            resendContainer.innerHTML = `
+        <span id="resend-timer-text" class="link" style="color:#98A2B3;">
+          Resend OTP in 30s
+        </span>
+      `;
+          }
+
+          startResendCountdown();
+        } catch (err) {
+          console.error(err);
+          setMessage(
+            "login-msg",
+            "error",
+            err.message || "Failed to resend OTP",
+          );
+        }
+      }
     </script>
   </body>
 </html>
