@@ -495,6 +495,8 @@
                   type="tel"
                   id="input-phone"
                   placeholder="Enter phone number"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
                 />
               </div>
             </div>
@@ -764,6 +766,12 @@
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js"></script>
     <script type="module">
+      const phoneInput = document.getElementById("input-phone");
+
+      phoneInput.addEventListener("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, "");
+      });
+
       function sendLoginToReactNative(token, user) {
         const payload = {
           type: "LOGIN_SUCCESS",
@@ -1308,7 +1316,7 @@
       const iti = window.intlTelInput(phoneInputField, {
         initialCountry: "ae",
         separateDialCode: true,
-        preferredCountries: ["ae","in", "us", "gb"],
+        preferredCountries: ["ae", "in", "us", "gb"],
         nationalMode: false,
         autoPlaceholder: "polite",
 
