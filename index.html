@@ -417,6 +417,28 @@
         padding: 8px;
         border: 1px solid #ddd;
       }
+
+      .btn-loader {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top: 2px solid #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
 
@@ -766,6 +788,26 @@
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js"></script>
     <script type="module">
+      function showLoader(button, text = "Please wait") {
+        button.dataset.originalText = button.innerHTML;
+
+        button.innerHTML = `
+    <span class="btn-loader">
+      <span class="spinner"></span>
+      ${text}
+    </span>
+  `;
+
+        button.style.pointerEvents = "none"; // prevent double click
+        button.style.opacity = "0.9";
+      }
+
+      function hideLoader(button) {
+        button.innerHTML = button.dataset.originalText || "Continue";
+        button.style.pointerEvents = "auto";
+        button.style.opacity = "1";
+      }
+
       const phoneInput = document.getElementById("input-phone");
 
       phoneInput.addEventListener("input", function () {
@@ -1027,8 +1069,8 @@
           return;
         }
         setMessage("login-msg", "", "");
-        btnPhoneContinue.disabled = true;
-
+        // btnPhoneContinue.disabled = true;
+        showLoader(btnPhoneContinue, "Sending OTP...");
         try {
           const verifier = setupRecaptcha("recaptcha-container");
           if (verifier.rendered) {
@@ -1048,7 +1090,8 @@
           console.error(err);
           setMessage("login-msg", "error", err.message || "Failed to send OTP");
         } finally {
-          btnPhoneContinue.disabled = false;
+          // btnPhoneContinue.disabled = false;
+          hideLoader(btnPhoneContinue);
         }
       });
 
@@ -1083,22 +1126,68 @@
         setLoginStep(1);
       });
 
+      // btnPhoneVerify.addEventListener("click", async () => {
+      //   const otp = document.getElementById("input-otp").value.trim();
+      //   if (!otp) return;
+      //   btnPhoneVerify.disabled = true;
+      //   setMessage("login-msg", "", "");
+
+      //   try {
+      //     const cred = await phoneConfirmation.confirm(otp);
+      //     let backendRes;
+      //     try {
+      //       backendRes = await backendPost("/users/verify-and-login", {
+      //         uid: cred.user.uid,
+      //         phoneNumber: cred.user.phoneNumber,
+      //       });
+      //     } catch (loginErr) {
+      //       // Fallback register
+      //       backendRes = await backendPost("/users/verify-and-register", {
+      //         uid: cred.user.uid,
+      //         phoneNumber: cred.user.phoneNumber,
+      //         name: "Phone User",
+      //         role: "vendor",
+      //       });
+      //     }
+      //     storeAuthData(backendRes.data.token, backendRes.data.user);
+      //     sendLoginToReactNative(backendRes.data.token, backendRes.data.user);
+      //     setMessage("login-msg", "success", "Success! Logging in...");
+      //   } catch (err) {
+      //     console.error(err);
+      //     const friendlyMessage = getOtpErrorMessage(err);
+      //     setMessage("login-msg", "error", friendlyMessage);
+      //     // setMessage(
+      //     //   "login-msg",
+      //     //   "error",
+      //     //   err.message || "Verification failed",
+      //     // );
+      //   } finally {
+      //     btnPhoneVerify.disabled = false;
+      //   }
+      // });
+
       btnPhoneVerify.addEventListener("click", async () => {
         const otp = document.getElementById("input-otp").value.trim();
-        if (!otp) return;
-        btnPhoneVerify.disabled = true;
+
+        if (!otp || otp.length !== 6) {
+          setMessage("login-msg", "error", "Please enter a valid 6-digit OTP");
+          return;
+        }
+
         setMessage("login-msg", "", "");
+        showLoader(btnPhoneVerify, "Verifying...");
 
         try {
           const cred = await phoneConfirmation.confirm(otp);
+
           let backendRes;
+
           try {
             backendRes = await backendPost("/users/verify-and-login", {
               uid: cred.user.uid,
               phoneNumber: cred.user.phoneNumber,
             });
           } catch (loginErr) {
-            // Fallback register
             backendRes = await backendPost("/users/verify-and-register", {
               uid: cred.user.uid,
               phoneNumber: cred.user.phoneNumber,
@@ -1106,21 +1195,20 @@
               role: "vendor",
             });
           }
+
           storeAuthData(backendRes.data.token, backendRes.data.user);
           sendLoginToReactNative(backendRes.data.token, backendRes.data.user);
+
           setMessage("login-msg", "success", "Success! Logging in...");
         } catch (err) {
           console.error(err);
-          setMessage(
-            "login-msg",
-            "error",
-            err.message || "Verification failed",
-          );
+
+          const friendlyMessage = getOtpErrorMessage(err);
+          setMessage("login-msg", "error", friendlyMessage);
         } finally {
-          btnPhoneVerify.disabled = false;
+          hideLoader(btnPhoneVerify);
         }
       });
-
       // document.getElementById('btn-google').addEventListener('click', async () => {
       //   const btn = document.getElementById('btn-google');
       //   btn.disabled = true;
@@ -1420,6 +1508,28 @@
           );
         }
       }
+
+      function getOtpErrorMessage(error) {
+        const code = error?.code || "";
+
+        switch (code) {
+          case "auth/invalid-verification-code":
+            return "Invalid OTP. Please check and try again.";
+
+          case "auth/code-expired":
+            return "OTP expired. Please request a new one.";
+
+          case "auth/too-many-requests":
+            return "Too many attempts. Please try again later.";
+
+          case "auth/session-expired":
+            return "Session expired. Please resend OTP.";
+
+          default:
+            return "Verification failed. Please try again.";
+        }
+      }
+      
     </script>
   </body>
 </html>
