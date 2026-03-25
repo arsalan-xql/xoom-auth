@@ -547,6 +547,8 @@
                   id="input-otp"
                   placeholder="123456"
                   maxlength="6"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
                 />
               </div>
             </div>
@@ -788,6 +790,12 @@
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js"></script>
     <script type="module">
+      const otpInput = document.getElementById("input-otp");
+
+      otpInput.addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, ""); // removes non-digits
+      });
+
       function showLoader(button, text = "Please wait") {
         button.dataset.originalText = button.innerHTML;
 
