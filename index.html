@@ -63,12 +63,45 @@
         overflow: hidden;
       }
 
+      /* Logo */
+      .logo-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .logo-wrapper img {
+        height: 64px;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
+      }
+
+      @media (max-width: 480px) {
+        .logo-wrapper img {
+          height: 48px;
+        }
+      }
+
       /* Header */
       h1 {
         font-size: 28px;
         font-weight: 700;
         color: var(--primary-blue);
         margin: 0 0 12px 0;
+      }
+
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 22px;
+        }
+
+        .card {
+          padding: 28px 20px;
+          margin: 12px;
+          border-radius: 16px;
+        }
       }
 
       .subtitle {
@@ -446,6 +479,9 @@
     <div class="card">
       <!-- LOGIN VIEW -->
       <div id="view-login">
+        <div class="logo-wrapper">
+          <img src="assets/logo.png" alt="Xoom Auth Logo" />
+        </div>
         <h1>Welcome Back</h1>
         <div class="subtitle">
           Sign in to your premium vendor account and manage your vehicle fleet.
